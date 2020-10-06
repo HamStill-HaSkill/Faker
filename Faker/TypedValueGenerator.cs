@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Faker
 {
-    public abstract class TypedValueGenerator<T> : IValueGenerator
+    public abstract class TypedValueGenerator<T> : IGenerator
     {
-        object IValueGenerator.Generate(GeneratorContext context)
+        object IGenerator.Generate(GeneratorContext context)
         {
             return Generate(context);
         }
@@ -16,6 +16,6 @@ namespace Faker
             return type == typeof(T);
         }
 
-        protected abstract T Generate(GeneratorContext context);
+        public abstract T Generate(GeneratorContext context);
     }
 }

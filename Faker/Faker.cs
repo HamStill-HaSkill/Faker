@@ -9,6 +9,7 @@ namespace Faker
 {
     class Faker : IFaker
     {
+        private Stack<Type> types = new Stack<Type>();
         public T Create<T>() // публичный метод для пользователя
         {
             return (T)Create(typeof(T));
@@ -16,34 +17,73 @@ namespace Faker
 
         private object Create(Type t) // метод для внутреннего использования
         {
-
+            types.Push(t);
+            var rand = new Random();
+            GeneratorContext context;
 
             var properties = t.GetProperties();
             var constructors = t.GetConstructors();
             var fields = t.GetFields();
             constructors = constructors.OrderBy(x => x.GetParameters().Count()).ToArray();
             var paramList = new List<object>();
+            object obj;
 
-            foreach (var param in constructors[^1].GetParameters())
+            if (constructors.Length != 0)
             {
-                paramList.Add(GetDefaultValue(param.ParameterType));
+                foreach (var param in constructors[^1].GetParameters())
+                {
+                    context = new GeneratorContext(rand, param.ParameterType);
+                    if (Generator.Generate(context) == null)
+                    {
+                        if (types.Contains(param.ParameterType))
+                        {
+                            continue;
+                        }
+                        paramList.Add(Create(param.ParameterType));
+                        continue;
+                    }
+                    paramList.Add(Generator.Generate(context));
+                }
+                obj = Activator.CreateInstance(t, paramList.ToArray());
+            }
+            else
+            {
+                obj = Activator.CreateInstance(t);
             }
 
-            var obj = Activator.CreateInstance(t, paramList.ToArray());
+
+            
 
             foreach (var property in properties)
             {
-                property.SetValue(obj, GetDefaultValue(property.PropertyType));
+                context = new GeneratorContext(rand, property.PropertyType);
+                if (Generator.Generate(context) == null)
+                {
+                    if (types.Contains(property.PropertyType))
+                    {
+                        continue;
+                    }
+                    property.SetValue(obj, Create(property.PropertyType));
+                    continue;
+                }
+                property.SetValue(obj, Generator.Generate(context));
             }
             foreach (var field in fields)
             {
-                field.SetValue(obj, GetDefaultValue(field.FieldType));
+                context = new GeneratorContext(rand, field.FieldType);
+                if (Generator.Generate(context) == null)
+                {
+                    if (types.Contains(field.FieldType))
+                    {
+                        continue;
+                    }
+                    field.SetValue(obj, Create(field.FieldType));
+                    continue;
+                }
+                field.SetValue(obj, Generator.Generate(context));
             }
-
+            types.Pop();
             return obj;
-            // Процедура создания и инициализации объекта.
-
-
         }
         private static object GetDefaultValue(Type t)
         {

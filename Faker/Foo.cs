@@ -12,6 +12,8 @@ namespace Faker
         public string Info { get; set; } = "info";
         public int Id { get; set; } = 5;
 
+        public Bar B { get; set; }
+
         public int field = 2;
         public Foo(int number, string data)
         {
