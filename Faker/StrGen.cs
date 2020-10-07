@@ -1,10 +1,11 @@
-﻿using System;
+﻿using FakerLib;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Faker
+namespace FakerLib
 {
-    class StrGen : IGenerator
+    public class StrGen : IGenerator
     {
         private readonly char[] letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
         public bool CanGenerate(Type type)

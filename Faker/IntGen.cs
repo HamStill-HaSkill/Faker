@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Faker
+namespace FakerLib
 {
-    class IntGen : IGenerator
+    public class IntGen : IGenerator
     {
         public bool CanGenerate(Type type)
         {
@@ -13,7 +13,7 @@ namespace Faker
 
         public object Generate(GeneratorContext context)
         {
-            return context.Random.Next(0, 100);
+            return context.Random.Next(-2147483648, 2147483647);
         }
     }
 }

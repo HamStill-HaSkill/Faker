@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Faker
+namespace FakerLib
 {
-    class Faker : IFaker
+    public class Faker : IFaker
     {
         private Stack<Type> types = new Stack<Type>();
         public T Create<T>() // публичный метод для пользователя
@@ -44,16 +44,28 @@ namespace Faker
                     }
                     paramList.Add(Generator.Generate(context));
                 }
-                obj = Activator.CreateInstance(t, paramList.ToArray());
+                try
+                {
+                    obj = Activator.CreateInstance(t, paramList.ToArray());
+                }
+                catch
+                {
+                    return null;
+                }
+               
             }
             else
             {
-                obj = Activator.CreateInstance(t);
+                try
+                {
+                    obj = Activator.CreateInstance(t);
+                }
+                catch
+                {
+                    return null;
+                }
+                
             }
-
-
-            
-
             foreach (var property in properties)
             {
                 context = new GeneratorContext(rand, property.PropertyType);
@@ -63,10 +75,26 @@ namespace Faker
                     {
                         continue;
                     }
-                    property.SetValue(obj, Create(property.PropertyType));
+
+                    try
+                    {
+                        property.SetValue(obj, Create(property.PropertyType));
+                    }
+                    catch
+                    {
+                        return null;
+                    }
                     continue;
                 }
-                property.SetValue(obj, Generator.Generate(context));
+
+                try
+                {
+                    property.SetValue(obj, Generator.Generate(context));
+                }
+                catch
+                {
+                    return null;
+                }
             }
             foreach (var field in fields)
             {
@@ -77,10 +105,24 @@ namespace Faker
                     {
                         continue;
                     }
-                    field.SetValue(obj, Create(field.FieldType));
+                    try
+                    {
+                        field.SetValue(obj, Create(field.FieldType));
+                    }
+                    catch
+                    {
+                        return null;
+                    }
                     continue;
                 }
-                field.SetValue(obj, Generator.Generate(context));
+                try
+                {
+                    field.SetValue(obj, Generator.Generate(context));
+                }
+                catch
+                {
+                    return null;
+                }
             }
             types.Pop();
             return obj;

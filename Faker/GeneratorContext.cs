@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Faker
+namespace FakerLib
 {
     public class GeneratorContext
     {

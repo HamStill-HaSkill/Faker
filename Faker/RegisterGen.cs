@@ -1,14 +1,33 @@
-﻿using System;
+﻿using FakerLib;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 
-namespace Faker
+namespace FakerLib
 {
     public static class RegisterGen
     {
+        public static string Path { get; set; } = "C:\\Users\\Xiaomi\\source\\repos\\Faker\\plugins";
         public static void Register(IGenerator gen)
         {
             Generator.generators.Add(gen);
+        }
+        public static void RegisterPlugins()
+        {
+            string a = Directory.GetCurrentDirectory();
+            string[] plugins = Directory.GetFiles(Path);
+            foreach (var plugin in plugins)
+            {
+                Assembly asm = Assembly.LoadFrom(plugin);
+                Type obj_type = asm.GetType($"{asm.GetTypes()[0]}", true, true);
+
+                IGenerator gen = (IGenerator)Activator.CreateInstance(obj_type);
+
+                Generator.generators.Add(gen);
+            }
+
         }
     }
 }

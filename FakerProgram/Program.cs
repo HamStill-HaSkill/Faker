@@ -1,8 +1,9 @@
-﻿using System;
-using System.Reflection;
+﻿using FakerLib;
 using Newtonsoft.Json;
+using System;
+using System.Reflection;
 
-namespace Faker
+namespace FakerProgram
 {
     class Program
     {
@@ -10,19 +11,18 @@ namespace Faker
         {
             RegisterGen.Register(new IntGen());
             RegisterGen.Register(new StrGen());
+            RegisterGen.Register(new DateGen());
+            RegisterGen.Register(new ListGen());
 
-            //Assembly asm = Assembly.LoadFrom("C:\\Users\\Xiaomi\\source\\repos\\Faker\\plugins\\LongGen.dll");
-            //Type obj_type = asm.GetType($"{asm.GetTypes()[0]}", true, true);
-
-            //IGenerator obj = (IGenerator)Activator.CreateInstance(obj_type);
-
-            //RegisterGen.Register((IGenerator)obj);
+            RegisterGen.RegisterPlugins();
 
             var faker = new Faker();
             Foo foo = faker.Create<Foo>();
             Moo moo = faker.Create<Moo>();
+            //Bar bar = faker.Create<Bar>();
             Console.WriteLine(JsonConvert.SerializeObject(foo));
             Console.WriteLine(JsonConvert.SerializeObject(moo));
+            //Console.WriteLine(JsonConvert.SerializeObject(bar));
             //Bar bar = faker.Create<Bar>();
         }
     }

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Faker
+namespace FakerProgram
 {
     struct Moo
     {
         public string name;
-        public int age;
+        public float age;
+        public List<int> listT;
     }
 }
