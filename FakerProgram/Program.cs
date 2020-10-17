@@ -19,11 +19,8 @@ namespace FakerProgram
             var faker = new Faker();
             Foo foo = faker.Create<Foo>();
             Moo moo = faker.Create<Moo>();
-            //Bar bar = faker.Create<Bar>();
             Console.WriteLine(JsonConvert.SerializeObject(foo));
             Console.WriteLine(JsonConvert.SerializeObject(moo));
-            //Console.WriteLine(JsonConvert.SerializeObject(bar));
-            //Bar bar = faker.Create<Bar>();
         }
     }
 }

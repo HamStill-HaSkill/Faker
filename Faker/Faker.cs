@@ -10,49 +10,59 @@ namespace FakerLib
     public class Faker : IFaker
     {
         private Stack<Type> types = new Stack<Type>();
-        public T Create<T>() // публичный метод для пользователя
+        public T Create<T>() 
         {
             return (T)Create(typeof(T));
         }
 
-        private object Create(Type t) // метод для внутреннего использования
+        private object Create(Type t) 
         {
             types.Push(t);
             var rand = new Random();
             GeneratorContext context;
 
+            context = new GeneratorContext(rand, t);
+            if (Generator.Generate(context) != null)
+            {
+                types.Pop();
+                return Generator.Generate(context);
+            }
+
             var properties = t.GetProperties();
             var constructors = t.GetConstructors();
             var fields = t.GetFields();
-            constructors = constructors.OrderBy(x => x.GetParameters().Count()).ToArray();
+            constructors = constructors.OrderByDescending(x => x.GetParameters().Count()).ToArray();
             var paramList = new List<object>();
-            object obj;
+            object obj = new object();
 
             if (constructors.Length != 0)
             {
-                foreach (var param in constructors[^1].GetParameters())
+                foreach (var constructor in constructors)
                 {
-                    context = new GeneratorContext(rand, param.ParameterType);
-                    if (Generator.Generate(context) == null)
+                    foreach (var param in constructor.GetParameters())
                     {
-                        if (types.Contains(param.ParameterType))
+                        context = new GeneratorContext(rand, param.ParameterType);
+                        if (Generator.Generate(context) == null)
                         {
+                            if (types.Contains(param.ParameterType))
+                            {
+                                continue;
+                            }
+                            paramList.Add(Create(param.ParameterType));
                             continue;
                         }
-                        paramList.Add(Create(param.ParameterType));
+                        paramList.Add(Generator.Generate(context));
+                    }
+                    try
+                    {
+                        obj = Activator.CreateInstance(t, paramList.ToArray());
+                        break;
+                    }
+                    catch
+                    {
                         continue;
                     }
-                    paramList.Add(Generator.Generate(context));
                 }
-                try
-                {
-                    obj = Activator.CreateInstance(t, paramList.ToArray());
-                }
-                catch
-                {
-                    return null;
-                }
-               
             }
             else
             {
@@ -62,9 +72,9 @@ namespace FakerLib
                 }
                 catch
                 {
+                    types.Pop();
                     return null;
-                }
-                
+                }  
             }
             foreach (var property in properties)
             {
@@ -82,6 +92,7 @@ namespace FakerLib
                     }
                     catch
                     {
+                        types.Pop();
                         return null;
                     }
                     continue;
@@ -93,6 +104,7 @@ namespace FakerLib
                 }
                 catch
                 {
+                    types.Pop();
                     return null;
                 }
             }
@@ -111,6 +123,7 @@ namespace FakerLib
                     }
                     catch
                     {
+                        types.Pop();
                         return null;
                     }
                     continue;
@@ -121,21 +134,12 @@ namespace FakerLib
                 }
                 catch
                 {
+                    types.Pop();
                     return null;
                 }
             }
             types.Pop();
             return obj;
         }
-        private static object GetDefaultValue(Type t)
-        {
-            if (t.IsValueType)
-                // Для типов-значений вызов конструктора по умолчанию даст default(T).
-                return Activator.CreateInstance(t);
-            else
-                // Для ссылочных типов значение по умолчанию всегда null.
-                return null;
-        }
-
     }
 }

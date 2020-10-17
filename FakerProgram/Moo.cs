@@ -8,6 +8,6 @@ namespace FakerProgram
     {
         public string name;
         public float age;
-        public List<int> listT;
+        public List<List<List<int>>> listT;
     }
 }

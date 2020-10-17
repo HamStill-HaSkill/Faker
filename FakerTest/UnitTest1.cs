@@ -82,6 +82,20 @@ namespace FakerTest
         }
 
         [Test]
+        public void SHouldGEnerateINt()
+        {
+            var i = faker.Create<int>();
+            Assert.NotZero(i);
+        }
+
+        [Test]
+        public void SHouldGEnerateFunc()
+        {
+            var @delegate = faker.Create<Func<int>>();
+            Assert.NotNull(@delegate);
+        }
+
+        [Test]
         public void StringPropertyTest()
         {
             Bar bar = faker.Create<Bar>();

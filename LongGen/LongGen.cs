@@ -22,10 +22,10 @@ namespace LongGen
 
             long result = (Math.Abs(longRand % (2000000000000000 - 1000000000000000)) + 1000000000000000);
 
-            long random_seed = (long)rand.Next(1000, 5000);
+            long random_seed = rand.Next(1000, 5000);
             random_seed = random_seed * result + rand.Next(1000, 5000);
 
-            return (long)(random_seed / 655) % 10000000000000001;
+            return random_seed / 655 % 10000000000000001;
         }
     }
 }

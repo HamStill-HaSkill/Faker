@@ -16,7 +16,6 @@ namespace FakerLib
         }
         public static void RegisterPlugins()
         {
-            string a = Directory.GetCurrentDirectory();
             string[] plugins = Directory.GetFiles(Path);
             foreach (var plugin in plugins)
             {
@@ -27,7 +26,6 @@ namespace FakerLib
 
                 Generator.generators.Add(gen);
             }
-
         }
     }
 }
