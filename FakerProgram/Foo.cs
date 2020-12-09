@@ -15,20 +15,11 @@ namespace FakerProgram
         public Bar B { get; set; }
 
         public int field = 2;
-        public Foo(int number, string data)
-        {
-            Data = data;
-            Number = number;
-        }
-        public Foo()
+        private Foo()
         {
 
         }
 
-        public Foo(int number)
-        {
-            Number = number;
-        }
 
     }
 }
